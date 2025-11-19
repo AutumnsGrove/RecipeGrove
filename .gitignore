@@ -1,0 +1,8 @@
+secrets.json
+*.log
+__pycache__/
+.DS_Store
+.claude/
+
+# Temporary research files (delete after use)
+AI_TOOLS_RESEARCH.md

@@ -1,0 +1,153 @@
+name: Setup New Project from Template
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'Project Name (e.g., MyAwesomeProject)'
+        required: true
+        type: string
+      project_description:
+        description: 'Brief Project Description'
+        required: false
+        type: string
+        default: 'A new project based on BaseProject template'
+      skip_git_init:
+        description: 'Skip git initialization (already initialized)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for proper cleanup
+      
+      - name: Setup project
+        run: |
+          echo "Setting up project: ${{ inputs.project_name }}"
+
+          # Update AGENT.md with project details
+          if [ -f "AGENT.md" ]; then
+            sed -i "s/\[Project Name\]/${{ inputs.project_name }}/g" AGENT.md
+            sed -i "s/\[Brief description of what this project does\]/${{ inputs.project_description }}/g" AGENT.md
+            echo "✓ Updated AGENT.md with project details"
+          fi
+          
+          # Create fresh TODOS.md
+          cat > TODOS.md << 'EOF'
+          # TODOs for ${{ inputs.project_name }}
+          
+          ## Setup Tasks
+          - [ ] Review and customize AGENT.md with project-specific details
+          - [ ] Set up project dependencies (uv, npm, go mod, etc.)
+          - [ ] Configure secrets if needed (see AgentUsage/secrets_management.md)
+          - [ ] Set up pre-commit hooks (optional, see AgentUsage/pre_commit_hooks/)
+          - [ ] Add initial project structure
+          
+          ## Development Tasks
+          - [ ] Define core features
+          - [ ] Set up testing framework
+          - [ ] Implement first feature
+          
+          ## Documentation Tasks
+          - [ ] Update README.md with project specifics
+          - [ ] Document API/architecture decisions
+          - [ ] Add usage examples
+          EOF
+          echo "✓ Created fresh TODOS.md"
+          
+          # Create README.md if it doesn't exist
+          if [ ! -f "README.md" ]; then
+            cat > README.md << 'EOF'
+          # ${{ inputs.project_name }}
+          
+          ${{ inputs.project_description }}
+          
+          ## Setup
+          
+          This project was created from the [BaseProject template](https://github.com/AutumnsGrove/BaseProject).
+          
+          ### Quick Start
+
+          1. Review `AGENT.md` for project context
+          2. Check `TODOS.md` for pending tasks
+          3. Explore `AgentUsage/` directory for workflow guides
+
+          ### Documentation
+
+          - See `AgentUsage/README.md` for comprehensive workflow guides
+          - Follow `AgentUsage/git_guide.md` for commit standards
+          - Check `AgentUsage/secrets_management.md` for API key handling
+          
+          ## Development
+          
+          This project is optimized for use with [Claude Code](https://docs.claude.com/en/docs/claude-code).
+          
+          ```bash
+          claude "Your development task here"
+          ```
+          
+          ## License
+          
+          [Add your license here]
+          EOF
+            echo "✓ Created README.md"
+          fi
+          
+          # Make scripts executable
+          if [ -d "AgentUsage/pre_commit_hooks" ]; then
+            chmod +x AgentUsage/pre_commit_hooks/*
+            echo "✓ Made pre-commit hooks executable"
+          fi
+          
+          # Remove template-specific files
+          rm -f setup_new_project.sh NEW_PROJECT_SETUP.md TEMPLATE_USAGE.md setup.sh
+          echo "✓ Removed template setup files"
+          
+          # Remove this workflow file itself (one-time setup)
+          rm -f .github/workflows/setup-template.yml
+          echo "✓ Removed setup workflow (one-time use)"
+      
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add -A
+          git commit -m "chore: initialize project from BaseProject template
+
+          - Updated AGENT.md with project details
+          - Created project-specific TODOS.md
+          - Updated README.md with project details
+          - Removed template files (setup.sh, TEMPLATE_USAGE.md, workflows)
+
+          Project: ${{ inputs.project_name }}
+          Description: ${{ inputs.project_description }}"
+          
+          git push
+          echo "✓ Changes committed and pushed"
+      
+      - name: Setup complete
+        run: |
+          echo "================================================"
+          echo "✅ Project setup complete!"
+          echo "================================================"
+          echo ""
+          echo "Project Name: ${{ inputs.project_name }}"
+          echo "Description: ${{ inputs.project_description }}"
+          echo ""
+          echo "Next steps:"
+          echo "1. Review and customize AGENT.md"
+          echo "2. Check TODOS.md for your task list"
+          echo "3. Explore AgentUsage/ guides"
+          echo "4. Start coding with: claude 'your task'"
+          echo ""
+          echo "================================================"
