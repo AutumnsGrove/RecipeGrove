@@ -52,7 +52,7 @@ uv run pytest
 uv run pytest tests/test_parser.py
 
 # Run with coverage
-uv run pytest --cov=recipelgrove
+uv run pytest --cov=recipegrove
 ```
 
 ### Before Submitting

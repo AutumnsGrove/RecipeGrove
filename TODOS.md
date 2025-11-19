@@ -83,7 +83,7 @@
 - [ ] Implement dry-run mode
 - [ ] Add emoji density controls (low/medium/high)
 - [ ] Implement custom output directory option
-- [ ] Add configuration file support (.recipelgroverc)
+- [ ] Add configuration file support (.recipegroverc)
 - [ ] Implement batch processing for multiple recipes
 - [ ] Add verbose/debug logging mode
 
@@ -137,5 +137,70 @@
 
 ---
 
-**Current Focus**: Stage 0 → Phase 1 MVP
-**Next Milestone**: Complete basic pipeline with OpenRouter + EmojiKitchen
+## 🚀 Phase 1.5: Testing Feedback Implementation (IN PROGRESS)
+
+### HIGH PRIORITY - Portability & Testing
+- [ ] **Emoji Path Portability** (CRITICAL)
+  - [ ] Add `--emoji-path` option (relative/absolute/base64/unicode)
+  - [ ] Implement relative path mode (copy emojis to ./grove-emojis/)
+  - [ ] Implement base64 embedding for single-file portability
+  - [ ] Make relative mode the default
+- [ ] **OmniParser Testing**
+  - [ ] Test URL parsing with recipe websites
+  - [ ] Test PDF parsing (text and scanned)
+  - [ ] Document supported formats and limitations
+
+### HIGH PRIORITY - Performance
+- [ ] **Parallel Emoji Generation**
+  - [ ] Refactor emoji generation to use asyncio.gather()
+  - [ ] Update CLI to handle parallel generation
+  - [ ] Add progress tracking for parallel tasks
+- [ ] **Enhanced Caching**
+  - [ ] Verify emoji cache works correctly
+  - [ ] Add cache statistics/reporting
+  - [ ] Implement cache warming command
+
+### HIGH PRIORITY - User Experience
+- [ ] **Custom Emoji Preferences (~/.recipegroverc)**
+  - [ ] Create UserPreferences model
+  - [ ] Load preferences from home directory
+  - [ ] Support favorite_emojis, avoid_emojis, defaults
+  - [ ] Document preference file format
+- [ ] **Input Sanitization**
+  - [ ] Add prompt injection protection
+  - [ ] Sanitize recipe content before LLM calls
+  - [ ] Add security tests
+
+### MEDIUM PRIORITY - Export Formats
+- [ ] **HTML Export**
+  - [ ] Create HTML template with embedded CSS
+  - [ ] Add `--format html` option
+  - [ ] Embed emojis as base64 in HTML
+  - [ ] Make HTML responsive and printable
+
+### MEDIUM PRIORITY - Seasonal Features
+- [ ] **Seasonal Theme Detection**
+  - [ ] Detect summer/winter/holiday recipes
+  - [ ] Add seasonal emoji suggestions
+  - [ ] Update themes.py with seasonal logic
+  - [ ] Add `--season` override option
+
+### MEDIUM PRIORITY - Shopping Features
+- [ ] **Shopping List Generator**
+  - [ ] Extract ingredients from recipe
+  - [ ] Categorize by department (produce, proteins, pantry)
+  - [ ] Add checkboxes for shopping
+  - [ ] Add `--shopping-list` flag
+  - [ ] Export as separate markdown file
+
+### Testing & Documentation
+- [ ] Add integration tests for new features
+- [ ] Update README with new options
+- [ ] Create EXAMPLES.md with before/after
+- [ ] Create TROUBLESHOOTING.md
+- [ ] Add API cost transparency to README
+
+---
+
+**Current Focus**: Phase 1.5 - Testing Feedback Implementation
+**Next Milestone**: Production-ready with portability, performance, and enhanced features

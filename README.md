@@ -44,7 +44,7 @@ Output (enhanced markdown file)
 ### Install via UV
 
 ```bash
-uv tool install recipelgrove
+uv tool install recipegrove
 ```
 
 ### Development Setup
@@ -68,41 +68,41 @@ cp secrets_template.json secrets.json
 
 ```bash
 # Process a recipe file
-recipelgrove examples/sample-recipes/pad-thai.md
+recipegrove examples/sample-recipes/pad-thai.md
 
 # Process a recipe URL
-recipelgrove https://example.com/pad-thai-recipe
+recipegrove https://example.com/pad-thai-recipe
 
 # Process a PDF
-recipelgrove grandmas-lasagna.pdf
+recipegrove grandmas-lasagna.pdf
 ```
 
 ### Options
 
 ```bash
 # Override theme detection
-recipelgrove recipe.pdf --theme italian
+recipegrove recipe.pdf --theme italian
 
 # Control emoji density (low/medium/high)
-recipelgrove recipe.txt --emoji-density high
+recipegrove recipe.txt --emoji-density high
 
 # Preview without generating emojis (dry-run)
-recipelgrove recipe.md --dry-run
+recipegrove recipe.md --dry-run
 
 # Verbose output with analysis tables
-recipelgrove recipe.txt --verbose
+recipegrove recipe.txt --verbose
 
 # Custom output location
-recipelgrove recipe.txt --output ./enhanced/
+recipegrove recipe.txt --output ./enhanced/
 
 # Specify LLM model
-recipelgrove recipe.md --model anthropic/claude-3.5-sonnet
+recipegrove recipe.md --model anthropic/claude-3.5-sonnet
 ```
 
 ### Full CLI Reference
 
 ```
-recipelgrove [OPTIONS] INPUT_PATH
+recipegrove [OPTIONS] INPUT_PATH
 
 Arguments:
   INPUT_PATH              Path to recipe file or URL
@@ -170,8 +170,8 @@ Example output:
 ## Project Structure
 
 ```
-recipelgrove/
-├── recipelgrove/
+recipegrove/
+├── recipegrove/
 │   ├── __init__.py
 │   ├── cli.py              # CLI interface
 │   ├── parser.py           # OmniParser integration
@@ -238,7 +238,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on contributing to RecipeG
 - [ ] Occasion-based theming (romantic, party, etc.)
 - [ ] Dietary style detection improvements
 - [ ] Batch processing for multiple recipes
-- [ ] Configuration file support (.recipelgroverc)
+- [ ] Configuration file support (.recipegroverc)
 - [ ] Integration tests with mocked services
 
 ### Phase 3 (Polish) - Future

@@ -1130,7 +1130,7 @@ wheels = [
 ]
 
 [[package]]
-name = "recipelgrove"
+name = "recipegrove"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

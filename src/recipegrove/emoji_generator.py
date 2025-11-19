@@ -27,7 +27,7 @@ class EmojiGenerator:
             size: Emoji image size in pixels (default 512)
             delay_ms: Delay between requests in milliseconds
         """
-        self.cache_dir = cache_dir or Path.home() / ".cache" / "recipelgrove" / "emojis"
+        self.cache_dir = cache_dir or Path.home() / ".cache" / "recipegrove" / "emojis"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.size = size
 

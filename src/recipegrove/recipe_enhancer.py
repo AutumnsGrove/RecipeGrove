@@ -1,10 +1,12 @@
 """Recipe enhancement - emoji insertion into markdown."""
 
 import re
+import shutil
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 from rich.console import Console
+from recipegrove.utils import image_to_base64
 
 console = Console()
 
@@ -12,9 +14,21 @@ console = Console()
 class RecipeEnhancer:
     """Inserts emojis into recipe markdown at specified locations."""
 
-    def __init__(self):
-        """Initialize recipe enhancer."""
-        pass
+    def __init__(
+        self,
+        emoji_path_mode: Literal["relative", "absolute", "base64", "unicode"] = "relative"
+    ):
+        """Initialize recipe enhancer.
+
+        Args:
+            emoji_path_mode: How to handle emoji paths in output
+                - relative: Copy emojis to ./grove-emojis/ and use relative paths
+                - absolute: Use absolute paths (current behavior)
+                - base64: Embed emojis as base64 data URIs
+                - unicode: Just use unicode emoji, no images
+        """
+        self.emoji_path_mode = emoji_path_mode
+        self.emoji_output_dir: Optional[Path] = None
 
     def enhance_recipe(
         self,
@@ -94,7 +108,11 @@ class RecipeEnhancer:
         console.print(f"[green]✓ Recipe enhanced with emojis[/green]")
         return enhanced
 
-    def generate_markdown_image(self, emoji_path: str, alt_text: str = "emoji") -> str:
+    def generate_markdown_image(
+        self,
+        emoji_path: str | Path,
+        alt_text: str = "emoji"
+    ) -> str:
         """Generate markdown image syntax for emoji.
 
         Args:
@@ -104,10 +122,54 @@ class RecipeEnhancer:
         Returns:
             Markdown image syntax
         """
-        # Make path absolute if it's a Path object
+        if self.emoji_path_mode == "unicode":
+            # Just use the alt text as unicode emoji
+            return alt_text.split("+")[0] if "+" in alt_text else alt_text
+
+        if self.emoji_path_mode == "base64":
+            # Embed as base64 data URI
+            if isinstance(emoji_path, (str, Path)):
+                path_obj = Path(emoji_path) if isinstance(emoji_path, str) else emoji_path
+                if path_obj.exists():
+                    base64_data = image_to_base64(path_obj)
+                    return f"![{alt_text}]({base64_data})"
+            return f"![{alt_text}]({emoji_path})"
+
+        if self.emoji_path_mode == "relative":
+            # Use relative path (will be copied to grove-emojis/)
+            if isinstance(emoji_path, Path):
+                emoji_filename = emoji_path.name
+                return f"![{alt_text}](./grove-emojis/{emoji_filename})"
+            return f"![{alt_text}]({emoji_path})"
+
+        # absolute mode (default/original behavior)
         if isinstance(emoji_path, Path):
             emoji_path = str(emoji_path.absolute())
         return f"![{alt_text}]({emoji_path})"
+
+    def _copy_emojis_to_relative_dir(
+        self,
+        emoji_paths: dict[str, Path | str],
+        output_path: Path
+    ) -> None:
+        """Copy emoji files to relative directory for portability.
+
+        Args:
+            emoji_paths: Mapping of locations to emoji paths
+            output_path: Path to output recipe file
+        """
+        # Create grove-emojis directory next to output file
+        emoji_dir = output_path.parent / "grove-emojis"
+        emoji_dir.mkdir(parents=True, exist_ok=True)
+        self.emoji_output_dir = emoji_dir
+
+        # Copy each emoji file
+        for location, emoji_path in emoji_paths.items():
+            if isinstance(emoji_path, Path) and emoji_path.exists():
+                dest_path = emoji_dir / emoji_path.name
+                if not dest_path.exists():
+                    shutil.copy2(emoji_path, dest_path)
+                    console.print(f"[dim]Copied emoji: {emoji_path.name}[/dim]")
 
     def find_title_location(self, markdown: str) -> Optional[int]:
         """Find position to insert title emoji."""

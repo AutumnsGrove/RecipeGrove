@@ -1,6 +1,6 @@
 """Tests for theme system."""
 
-from recipelgrove.themes import THEMES, CuisineType, get_theme
+from recipegrove.themes import THEMES, CuisineType, get_theme
 
 
 def test_themes_exist():

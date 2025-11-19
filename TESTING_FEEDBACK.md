@@ -19,7 +19,7 @@ RecipeGrove is production-ready and works beautifully! The core functionality is
 - **Emoji Selection**: Contextually appropriate and creative emoji combinations
 - **Placement Logic**: Smart placement in titles, ingredients, steps, and serving suggestions
 - **Output Quality**: Clean, well-formatted markdown with proper inline image syntax
-- **Caching System**: Emojis cached efficiently in `~/.cache/recipelgrove/emojis/`
+- **Caching System**: Emojis cached efficiently in `~/.cache/recipegrove/emojis/`
 
 ### 2. User Experience (9/10)
 - **CLI Design**: Beautiful Rich-based UI with clear progress indicators
@@ -42,7 +42,7 @@ RecipeGrove is production-ready and works beautifully! The core functionality is
 #### 1. Emoji Display Enhancement
 **Current Behavior**: Emojis inserted as markdown image syntax
 ```markdown
-# Pad Thai ![🇹🇭+🍜](/root/.cache/recipelgrove/emojis/🇹🇭/🇹🇭_🍜.png)
+# Pad Thai ![🇹🇭+🍜](/root/.cache/recipegrove/emojis/🇹🇭/🇹🇭_🍜.png)
 ```
 
 **Issue**: The path `/root/.cache/...` is system-specific and won't render correctly when:
@@ -70,10 +70,10 @@ RecipeGrove is production-ready and works beautifully! The core functionality is
 
 3. **Configuration Option** (Best flexibility)
    ```bash
-   recipelgrove recipe.md --emoji-path relative  # copies to ./grove-emojis/
-   recipelgrove recipe.md --emoji-path absolute  # current behavior
-   recipelgrove recipe.md --emoji-path base64    # embed inline
-   recipelgrove recipe.md --emoji-path none      # just use emoji unicode
+   recipegrove recipe.md --emoji-path relative  # copies to ./grove-emojis/
+   recipegrove recipe.md --emoji-path absolute  # current behavior
+   recipegrove recipe.md --emoji-path base64    # embed inline
+   recipegrove recipe.md --emoji-path none      # just use emoji unicode
    ```
 
 **Recommendation**: Implement option #3 with `relative` as default for maximum portability.
@@ -85,9 +85,9 @@ RecipeGrove is production-ready and works beautifully! The core functionality is
 **Suggestion**: Add `--output-suffix` option for customization
 
 ```bash
-recipelgrove recipe.md --output-suffix enhanced  # recipe-enhanced.md
-recipelgrove recipe.md --output-suffix ""        # recipe.md (overwrite warning)
-recipelgrove recipe.md -o custom-name.md         # custom-name.md (current)
+recipegrove recipe.md --output-suffix enhanced  # recipe-enhanced.md
+recipegrove recipe.md --output-suffix ""        # recipe.md (overwrite warning)
+recipegrove recipe.md -o custom-name.md         # custom-name.md (current)
 ```
 
 **Why**: Some users might prefer different naming conventions (e.g., `_enhanced`, `-emoji`, etc.)
@@ -99,9 +99,9 @@ recipelgrove recipe.md -o custom-name.md         # custom-name.md (current)
 **Suggested**: Add batch processing capability
 
 ```bash
-recipelgrove examples/sample-recipes/*.md
+recipegrove examples/sample-recipes/*.md
 # or
-recipelgrove --batch examples/sample-recipes/
+recipegrove --batch examples/sample-recipes/
 ```
 
 **Benefits**:
@@ -115,7 +115,7 @@ recipelgrove --batch examples/sample-recipes/
 **Suggested**: Add `--interactive` mode for emoji approval
 
 ```bash
-recipelgrove recipe.md --interactive
+recipegrove recipe.md --interactive
 ```
 
 **Flow**:
@@ -142,9 +142,9 @@ recipelgrove recipe.md --interactive
 
 **Testing Suggestion**:
 ```bash
-recipelgrove pad-thai.md --emoji-density low    # Expect 2-3 emojis
-recipelgrove pad-thai.md --emoji-density medium # Expect 4-6 emojis
-recipelgrove pad-thai.md --emoji-density high   # Expect 7-10 emojis
+recipegrove pad-thai.md --emoji-density low    # Expect 2-3 emojis
+recipegrove pad-thai.md --emoji-density medium # Expect 4-6 emojis
+recipegrove pad-thai.md --emoji-density high   # Expect 7-10 emojis
 ```
 
 **If not fully implemented**: Ensure the LLM prompt adjusts emoji count based on this flag
@@ -166,7 +166,7 @@ recipelgrove pad-thai.md --emoji-density high   # Expect 7-10 emojis
 **Current Status**: README claims URL support
 **Needs Testing**:
 ```bash
-recipelgrove https://www.budgetbytes.com/pad-thai/
+recipegrove https://www.budgetbytes.com/pad-thai/
 ```
 
 **Potential Issues to Check**:
@@ -183,7 +183,7 @@ recipelgrove https://www.budgetbytes.com/pad-thai/
 **Current Status**: README claims PDF support
 **Needs Testing**:
 ```bash
-recipelgrove grandmas-lasagna.pdf
+recipegrove grandmas-lasagna.pdf
 ```
 
 **Check**:
@@ -200,7 +200,7 @@ recipelgrove grandmas-lasagna.pdf
 **Suggested Enhancement**: Show detected theme with confirmation option
 
 ```bash
-recipelgrove recipe.md
+recipegrove recipe.md
 # Output:
 # Detected theme: Italian
 # Use --theme to override or press Enter to continue...
@@ -215,7 +215,7 @@ Or add `--confirm-theme` flag for interactive confirmation
 **Suggestion**: Add preview mode that generates and displays emojis in terminal
 
 ```bash
-recipelgrove recipe.md --preview
+recipegrove recipe.md --preview
 ```
 
 **Output**:
@@ -230,7 +230,7 @@ Preview: [Shows 🦐+🥚 combination]
 ---
 
 #### 11. Custom Emoji Preferences
-**Suggested**: User preference file `~/.recipelgroverc`
+**Suggested**: User preference file `~/.recipegroverc`
 
 ```json
 {
@@ -238,7 +238,7 @@ Preview: [Shows 🦐+🥚 combination]
   "avoid_emojis": ["💩", "🤮"],
   "emoji_density_default": "medium",
   "output_path_default": "relative",
-  "cache_location": "~/.cache/recipelgrove"
+  "cache_location": "~/.cache/recipegrove"
 }
 ```
 
@@ -251,9 +251,9 @@ Preview: [Shows 🦐+🥚 combination]
 **Suggested**: Add export formats
 
 ```bash
-recipelgrove recipe.md --format obsidian   # Obsidian-compatible
-recipelgrove recipe.md --format notion     # Notion import format
-recipelgrove recipe.md --format html       # Standalone HTML
+recipegrove recipe.md --format obsidian   # Obsidian-compatible
+recipegrove recipe.md --format notion     # Notion import format
+recipegrove recipe.md --format html       # Standalone HTML
 ```
 
 **Obsidian Integration Example**:
@@ -304,7 +304,7 @@ recipelgrove recipe.md --format html       # Standalone HTML
 **Test**:
 ```bash
 # Disable network mid-process
-recipelgrove recipe.md
+recipegrove recipe.md
 # Interrupt after analysis but before emoji generation
 ```
 
@@ -341,8 +341,8 @@ recipelgrove recipe.md
 ### 6. File Permissions
 **Test**:
 ```bash
-recipelgrove readonly-recipe.md        # Input is read-only
-recipelgrove recipe.md -o /readonly/   # Output dir is read-only
+recipegrove readonly-recipe.md        # Input is read-only
+recipegrove recipe.md -o /readonly/   # Output dir is read-only
 ```
 
 **Expected**: Clear error messages explaining permission issues
@@ -388,7 +388,7 @@ logger.error(f"Emoji generation failed", extra={
 **Add state saving for long operations**:
 ```python
 # Save state after each major step
-state_file = f".recipelgrove-{recipe_hash}.json"
+state_file = f".recipegrove-{recipe_hash}.json"
 save_state({
     "step": "emoji_generation",
     "completed_emojis": ["🇹🇭+🍜", "🥚+🦐"],
@@ -448,7 +448,7 @@ async def generate_all_emojis(emoji_list):
 **Suggested**: Pre-generate common emoji combinations
 
 ```bash
-recipelgrove --warm-cache
+recipegrove --warm-cache
 # Pre-generates common cooking emojis:
 # 🔥+🍳, 🧄+🌶️, 🧈+🥚, etc.
 ```
@@ -485,10 +485,10 @@ Techniques: [YELLOW] soaking, stir-frying, scrambling
 ---
 
 ### 2. Example Gallery
-**Suggested**: Add `recipelgrove --gallery` command
+**Suggested**: Add `recipegrove --gallery` command
 
 ```bash
-recipelgrove --gallery
+recipegrove --gallery
 ```
 
 **Shows**:
@@ -610,15 +610,15 @@ if os.path.exists(secrets_path):
 **Suggested**: Support for recipe book projects
 
 ```bash
-recipelgrove init cookbook
+recipegrove init cookbook
 # Creates:
 # cookbook/
-#   ├── .recipelgrove.json (config)
+#   ├── .recipegrove.json (config)
 #   ├── recipes/
 #   ├── enhanced/
 #   └── index.md (auto-generated)
 
-recipelgrove build
+recipegrove build
 # Processes all recipes in recipes/, outputs to enhanced/
 # Generates index.md with table of contents
 ```
@@ -707,14 +707,14 @@ Why: Requires wok skills and timing coordination
 ```python
 def test_full_pipeline_pad_thai():
     """Test complete flow with real API calls"""
-    result = run_recipelgrove("examples/sample-recipes/pad-thai.md")
+    result = run_recipegrove("examples/sample-recipes/pad-thai.md")
     assert result.exit_code == 0
     assert os.path.exists("examples/sample-recipes/pad-thai-grove.md")
     assert "🇹🇭" in read_file("examples/sample-recipes/pad-thai-grove.md")
 
 def test_batch_processing():
     """Test processing multiple recipes"""
-    result = run_recipelgrove("examples/sample-recipes/*.md")
+    result = run_recipegrove("examples/sample-recipes/*.md")
     assert len(glob("examples/sample-recipes/*-grove.md")) == 10
 ```
 
@@ -755,8 +755,8 @@ def test_rate_limit_hit():
 ### 1. Add `--version` Flag ✅
 Already in README, verify it works:
 ```bash
-recipelgrove --version
-# Should output: recipelgrove 0.1.0
+recipegrove --version
+# Should output: recipegrove 0.1.0
 ```
 
 ---
@@ -774,7 +774,7 @@ Step 1: Parsing recipe
 ### 3. Add Emoji Count to Filename (Optional)
 **Suggested flag**: `--numbered-output`
 ```bash
-recipelgrove recipe.md --numbered-output
+recipegrove recipe.md --numbered-output
 # Output: recipe-grove-5emojis.md
 ```
 
@@ -880,7 +880,7 @@ RecipeGrove-Community/
 12. ✅ Create video demo
 
 **Week 4 - Nice to Have**:
-13. ✅ Add custom emoji preferences (~/.recipelgroverc)
+13. ✅ Add custom emoji preferences (~/.recipegroverc)
 14. ✅ Implement parallel emoji generation
 15. ✅ Add Obsidian/Notion export formats
 16. ✅ Create community recipe gallery

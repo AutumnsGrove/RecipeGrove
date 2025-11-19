@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from recipelgrove.utils import (
+from recipegrove.utils import (
     generate_cache_key,
     get_output_path,
     is_url,

@@ -8,6 +8,8 @@ import httpx
 from pydantic import BaseModel, ValidationError
 from rich.console import Console
 
+from recipegrove.utils import sanitize_input, detect_season, get_seasonal_emojis
+
 console = Console()
 
 
@@ -120,21 +122,36 @@ class RecipeAnalyzer:
 
         raise RuntimeError(f"Failed after {self.max_retries} retries")
 
-    async def analyze_recipe(self, markdown_content: str) -> RecipeAnalysis:
+    async def analyze_recipe(
+        self,
+        markdown_content: str,
+        enable_seasonal: bool = True
+    ) -> RecipeAnalysis:
         """Analyze recipe content to determine theming.
 
         Args:
             markdown_content: Recipe in markdown format
+            enable_seasonal: If True, include seasonal context
 
         Returns:
             Structured analysis results
         """
         console.print("[cyan]Analyzing recipe with LLM...[/cyan]")
 
-        prompt = f"""You are analyzing a recipe to add thematic emoji combinations.
+        # Sanitize input to protect against prompt injection
+        sanitized_content = sanitize_input(markdown_content)
+
+        # Detect current season for context
+        season_context = ""
+        if enable_seasonal:
+            current_season = detect_season()
+            seasonal_emojis = get_seasonal_emojis(current_season)
+            season_context = f"\n\nCurrent season: {current_season.title()}\nSeasonal emoji suggestions: {', '.join(seasonal_emojis[:5])}"
+
+        prompt = f"""You are analyzing a recipe to add thematic emoji combinations.{season_context}
 
 Recipe content:
-{markdown_content}
+{sanitized_content}
 
 Tasks:
 1. Identify the cuisine type and regional style (e.g., Thai, Japanese, Italian, Mexican)

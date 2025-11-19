@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from recipelgrove.analyzer import (
+from recipegrove.analyzer import (
     RecipeAnalyzer,
     RecipeAnalysis,
     EmojiPlacement,

@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from recipelgrove.recipe_enhancer import RecipeEnhancer
+from recipegrove.recipe_enhancer import RecipeEnhancer
 
 
 @pytest.fixture
