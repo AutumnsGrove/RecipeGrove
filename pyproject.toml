@@ -13,6 +13,8 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "pydantic>=2.0.0",
     "rich>=13.0.0",
+    "omniparser @ git+https://github.com/AutumnsGrove/OmniParser.git",
+    "emoji-kitchen @ git+https://github.com/AutumnsGrove/EmojiKitchen.git",
 ]
 license = "MIT"
 keywords = ["recipe", "emoji", "markdown", "cli", "ai"]
@@ -45,10 +47,7 @@ dev = [
     "mypy>=1.8.0",
 ]
 
-# TODO: Add once OmniParser and EmojiKitchen are published or we confirm their package names
-# For now, these will need to be added via:
-# uv add git+https://github.com/AutumnsGrove/OmniParser.git
-# uv add git+https://github.com/AutumnsGrove/EmojiKitchen.git
+# OmniParser and EmojiKitchen added as git dependencies above
 
 [tool.uv]
 dev-dependencies = [

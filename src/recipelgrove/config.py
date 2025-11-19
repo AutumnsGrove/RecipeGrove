@@ -73,6 +73,28 @@ def get_config() -> AppConfig:
     return AppConfig()
 
 
+class Config(BaseModel):
+    """Combined configuration object."""
+
+    secrets: SecretsConfig
+    app: AppConfig
+
+
+def load_config(secrets_path: Path | None = None) -> Config:
+    """Load complete configuration.
+
+    Args:
+        secrets_path: Optional path to secrets.json file
+
+    Returns:
+        Config object with secrets and app configuration
+    """
+    return Config(
+        secrets=load_secrets(secrets_path),
+        app=get_config(),
+    )
+
+
 def validate_config() -> tuple[bool, list[str]]:
     """Validate configuration and return any errors.
 
