@@ -67,30 +67,57 @@ cp secrets_template.json secrets.json
 ### Basic Commands
 
 ```bash
+# Process a recipe file
+recipelgrove examples/sample-recipes/pad-thai.md
+
 # Process a recipe URL
 recipelgrove https://example.com/pad-thai-recipe
 
 # Process a PDF
 recipelgrove grandmas-lasagna.pdf
-
-# Process a text file
-recipelgrove recipe.txt
 ```
 
-### Advanced Options
+### Options
 
 ```bash
 # Override theme detection
 recipelgrove recipe.pdf --theme italian
 
-# Control emoji density
+# Control emoji density (low/medium/high)
 recipelgrove recipe.txt --emoji-density high
 
-# Preview without generating emojis
+# Preview without generating emojis (dry-run)
 recipelgrove recipe.md --dry-run
 
-# Specify output location
-recipelgrove recipe.txt --output ~/recipes/enhanced/
+# Verbose output with analysis tables
+recipelgrove recipe.txt --verbose
+
+# Custom output location
+recipelgrove recipe.txt --output ./enhanced/
+
+# Specify LLM model
+recipelgrove recipe.md --model anthropic/claude-3.5-sonnet
+```
+
+### Full CLI Reference
+
+```
+recipelgrove [OPTIONS] INPUT_PATH
+
+Arguments:
+  INPUT_PATH              Path to recipe file or URL
+
+Options:
+  --theme [asian|italian|mexican|mediterranean|auto]
+                          Override automatic theme detection (default: auto)
+  --model TEXT            LLM model to use (default: anthropic/claude-3.5-sonnet)
+  -o, --output PATH       Custom output location
+  --emoji-density [low|medium|high]
+                          Control emoji frequency (default: medium)
+  --dry-run               Preview planned emojis without generating
+  -v, --verbose           Enable verbose output with analysis details
+  --version               Show version
+  --help                  Show this message
 ```
 
 ## Configuration
@@ -191,32 +218,36 @@ Install hooks:
 
 ### Contributing
 
-See [AGENT.md](AGENT.md) for development guidelines and workflow patterns.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on contributing to RecipeGrove.
 
 ## Roadmap
 
-### Phase 1 (MVP) - Current Focus
+### ✅ Phase 1 (MVP) - Complete!
 - [x] Project setup and structure
-- [ ] Basic CLI structure
-- [ ] OmniParser integration
-- [ ] OpenRouter/Claude integration
-- [ ] EmojiKitchen integration
-- [ ] Simple emoji insertion
-- [ ] Markdown output
+- [x] CLI with full option support
+- [x] OmniParser integration (URLs, PDFs, text files)
+- [x] OpenRouter/Claude LLM integration
+- [x] EmojiKitchen integration with caching
+- [x] Intelligent emoji insertion
+- [x] Markdown output with inline emojis
+- [x] Dry-run and verbose modes
+- [x] 55 unit tests passing
 
-### Phase 2 (Enhancement)
-- [ ] Sophisticated theming logic
-- [ ] Multiple theme support
-- [ ] Error handling & fallbacks
-- [ ] Dry-run mode
-- [ ] Configuration options
+### Phase 2 (Enhancement) - Next
+- [ ] More cuisine themes (Indian, French, American)
+- [ ] Occasion-based theming (romantic, party, etc.)
+- [ ] Dietary style detection improvements
+- [ ] Batch processing for multiple recipes
+- [ ] Configuration file support (.recipelgroverc)
+- [ ] Integration tests with mocked services
 
-### Phase 3 (Polish)
-- [ ] Model switching (Kimi k2, Moonshot, Anthropic)
-- [ ] Performance optimization (caching)
-- [ ] Obsidian integration refinement
-- [ ] Comprehensive documentation
-- [ ] Example gallery
+### Phase 3 (Polish) - Future
+- [ ] Model switching (Kimi k2, Moonshot, direct Anthropic)
+- [ ] Performance optimization and benchmarks
+- [ ] Obsidian integration
+- [ ] PyPI package distribution
+- [ ] Example gallery and demo video
+- [ ] Local model support
 
 ## License
 
@@ -230,7 +261,9 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ---
 
-**Status**: Stage 0 - Project initialization and setup
+**Status**: ✅ Phase 1 MVP Complete - 55 tests passing
+
+**Next Steps**: Add your OpenRouter API key and test with real recipes!
 
 **Created**: 2025-11-19
 **Maintained by**: [@AutumnsGrove](https://github.com/AutumnsGrove)
