@@ -5,17 +5,26 @@
 ---
 
 ## Project Purpose
-[Fill in: What this project does - 1-2 sentences]
+RecipeGrove is a Python CLI tool that transforms ordinary recipes into fun, emoji-enhanced markdown documents using intelligent, thematic emoji combinations generated from recipe analysis.
 
 ## Tech Stack
-[Fill in: Technologies, frameworks, and languages used]
-- Language:
-- Framework:
+- Language: Python 3.11+
+- CLI Framework: Click/Typer
 - Key Libraries:
-- Package Manager:
+  - OmniParser (universal document parser)
+  - EmojiKitchen (custom emoji generation)
+  - OpenRouter API client (LLM integration)
+  - httpx (async HTTP client)
+- Package Manager: UV
+- LLM Provider: OpenRouter API (Claude 4.5 Sonnet, with future support for Kimi k2, Moonshot, and direct Anthropic)
 
 ## Architecture Notes
-[Fill in: Key architectural decisions, patterns, or structure]
+- Pipeline architecture: Input → OmniParser → LLM Analysis → EmojiKitchen → Enhanced Output
+- LLM analyzes recipe content to determine cuisine type, ingredients, and appropriate theming
+- EmojiKitchen generates custom emoji combinations (~100k possibilities)
+- Fallback/recursion logic for failed emoji combinations
+- Inline markdown image insertion for emojis
+- Never overwrites original files (creates `-grove` suffixed outputs)
 
 ---
 
