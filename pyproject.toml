@@ -108,10 +108,12 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "-v",
-    "--cov=recipelgrove",
-    "--cov-report=term-missing",
-    "--cov-report=html",
 ]
+# Coverage options commented out until pytest-cov is properly configured
+# Uncomment after installing: uv add --dev pytest-cov
+# "--cov=recipelgrove",
+# "--cov-report=term-missing",
+# "--cov-report=html",
 
 [tool.mypy]
 python_version = "3.11"
