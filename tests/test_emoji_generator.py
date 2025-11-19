@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from recipelgrove.emoji_generator import EmojiGenerator
+from recipegrove.emoji_generator import EmojiGenerator
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def test_generator_initialization(tmp_path):
 def test_generator_default_cache_dir():
     """Test generator uses default cache dir."""
     gen = EmojiGenerator()
-    expected = Path.home() / ".cache" / "recipelgrove" / "emojis"
+    expected = Path.home() / ".cache" / "recipegrove" / "emojis"
     assert gen.cache_dir == expected
 
 

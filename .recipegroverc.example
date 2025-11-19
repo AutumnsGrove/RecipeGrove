@@ -1,0 +1,19 @@
+{
+  "favorite_emojis": [
+    "🌶️",
+    "🥘",
+    "🍜",
+    "🔥",
+    "⭐"
+  ],
+  "avoid_emojis": [
+    "💩",
+    "🤮"
+  ],
+  "default_emoji_density": "medium",
+  "default_emoji_path_mode": "relative",
+  "default_export_format": "markdown",
+  "cache_location": null,
+  "enable_seasonal_themes": true,
+  "enable_shopping_lists": false
+}

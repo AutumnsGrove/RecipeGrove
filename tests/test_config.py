@@ -1,6 +1,6 @@
 """Tests for configuration management."""
 
-from recipelgrove.config import AppConfig, SecretsConfig, get_config
+from recipegrove.config import AppConfig, SecretsConfig, get_config
 
 
 def test_app_config_defaults():

@@ -29,6 +29,15 @@ class OccasionType(Enum):
     EVERYDAY = "everyday"
 
 
+class SeasonType(Enum):
+    """Season types for seasonal themes."""
+
+    WINTER = "winter"
+    SPRING = "spring"
+    SUMMER = "summer"
+    FALL = "fall"
+
+
 @dataclass
 class ThemeConfig:
     """Configuration for a recipe theme."""
@@ -77,10 +86,58 @@ THEMES = {
     ),
 }
 
+# Seasonal themes
+SEASONAL_THEMES = {
+    "winter": ThemeConfig(
+        name="Winter Comfort",
+        cuisine=CuisineType.GENERAL,
+        primary_emojis=["❄️", "☃️", "🔥", "🎄"],
+        accent_emojis=["🍲", "🥘", "☕", "🍵", "🥧", "🎁"],
+        color_palette=["#4A90E2", "#FFFFFF", "#D0021B"],
+        description="Cozy winter themes with comfort foods and warm drinks",
+    ),
+    "spring": ThemeConfig(
+        name="Spring Fresh",
+        cuisine=CuisineType.GENERAL,
+        primary_emojis=["🌸", "🌷", "🦋", "🌱"],
+        accent_emojis=["🥗", "🌿", "🌼", "🐝", "🍓"],
+        color_palette=["#B8E986", "#FFE66D", "#FF6B6B"],
+        description="Fresh spring themes with light dishes and vibrant colors",
+    ),
+    "summer": ThemeConfig(
+        name="Summer Vibes",
+        cuisine=CuisineType.GENERAL,
+        primary_emojis=["☀️", "🏖️", "🌊", "🌴"],
+        accent_emojis=["🍉", "🍓", "🥤", "🍦", "🏄"],
+        color_palette=["#FFD93D", "#6BCB77", "#4D96FF"],
+        description="Bright summer themes with refreshing foods and drinks",
+    ),
+    "fall": ThemeConfig(
+        name="Autumn Harvest",
+        cuisine=CuisineType.GENERAL,
+        primary_emojis=["🍂", "🍁", "🎃", "🌾"],
+        accent_emojis=["🍎", "🍇", "🌰", "🥧", "🦃"],
+        color_palette=["#FF6B35", "#F7931E", "#C1292E"],
+        description="Harvest themes with autumn ingredients and warm colors",
+    ),
+}
+
 
 def get_theme(theme_name: str) -> ThemeConfig | None:
     """Get theme configuration by name."""
     return THEMES.get(theme_name.lower())
+
+
+def get_seasonal_theme(season: str) -> ThemeConfig | None:
+    """Get seasonal theme configuration.
+
+    Args:
+        season: Season name ('winter', 'spring', 'summer', 'fall')
+
+    Returns:
+        ThemeConfig for the season or None
+    """
+    return SEASONAL_THEMES.get(season.lower())
 
 
 def suggest_emojis_for_ingredient(ingredient: str, theme: ThemeConfig) -> list[str]:

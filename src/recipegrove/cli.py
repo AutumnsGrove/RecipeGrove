@@ -10,11 +10,14 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from recipelgrove.analyzer import RecipeAnalyzer
-from recipelgrove.config import load_config
-from recipelgrove.emoji_generator import EmojiGenerator
-from recipelgrove.parser import RecipeParser
-from recipelgrove.recipe_enhancer import RecipeEnhancer
+from recipegrove.analyzer import RecipeAnalyzer
+from recipegrove.config import load_config
+from recipegrove.emoji_generator import EmojiGenerator
+from recipegrove.html_exporter import HTMLExporter
+from recipegrove.parser import RecipeParser
+from recipegrove.recipe_enhancer import RecipeEnhancer
+from recipegrove.shopping_list import ShoppingListGenerator
+from recipegrove.utils import detect_season
 
 console = Console()
 
@@ -26,6 +29,12 @@ console = Console()
     type=click.Choice(["asian", "italian", "mexican", "mediterranean", "auto"]),
     default="auto",
     help="Override automatic theme detection",
+)
+@click.option(
+    "--season",
+    type=click.Choice(["winter", "spring", "summer", "fall", "auto"]),
+    default="auto",
+    help="Apply seasonal theme (auto-detects by default)",
 )
 @click.option(
     "--model",
@@ -46,6 +55,23 @@ console = Console()
     help="Control emoji frequency",
 )
 @click.option(
+    "--emoji-path",
+    type=click.Choice(["relative", "absolute", "base64", "unicode"]),
+    default="relative",
+    help="How to handle emoji paths (relative=portable, base64=embedded)",
+)
+@click.option(
+    "--format",
+    type=click.Choice(["markdown", "html"]),
+    default="markdown",
+    help="Output format",
+)
+@click.option(
+    "--shopping-list",
+    is_flag=True,
+    help="Also generate a shopping list",
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     help="Preview planned emojis without generating",
@@ -56,13 +82,17 @@ console = Console()
     is_flag=True,
     help="Enable verbose output",
 )
-@click.version_option(version="0.1.0", prog_name="recipelgrove")
+@click.version_option(version="0.1.0", prog_name="recipegrove")
 def main(
     input_path: str,
     theme: str,
+    season: str,
     model: str,
     output: str | None,
     emoji_density: str,
+    emoji_path: str,
+    format: str,
+    shopping_list: bool,
     dry_run: bool,
     verbose: bool,
 ) -> None:
@@ -76,9 +106,13 @@ def main(
             run_pipeline(
                 input_path=input_path,
                 theme=theme,
+                season=season,
                 model=model,
                 output=output,
                 emoji_density=emoji_density,
+                emoji_path=emoji_path,
+                export_format=format,
+                generate_shopping_list=shopping_list,
                 dry_run=dry_run,
                 verbose=verbose,
             )
@@ -96,9 +130,13 @@ def main(
 async def run_pipeline(
     input_path: str,
     theme: str,
+    season: str,
     model: str,
     output: str | None,
     emoji_density: str,
+    emoji_path: str,
+    export_format: str,
+    generate_shopping_list: bool,
     dry_run: bool,
     verbose: bool,
 ) -> None:
@@ -111,6 +149,11 @@ async def run_pipeline(
 
     # Load configuration
     config = load_config()
+
+    # Detect season if auto
+    current_season = detect_season() if season == "auto" else season
+    if verbose and season == "auto":
+        console.print(f"[dim]Detected season: {current_season}[/dim]\n")
 
     # Check for API key
     if not config.secrets.openrouter_api_key:
@@ -196,36 +239,36 @@ async def run_pipeline(
         console.print("\n[green]✓ Dry run complete![/green]")
         return
 
-    # Step 4: Generate emoji combinations
-    console.print("\n[bold cyan]Step 4:[/bold cyan] Generating emoji combinations")
+    # Step 4: Generate emoji combinations (in parallel!)
+    console.print("\n[bold cyan]Step 4:[/bold cyan] Generating emoji combinations (parallel)")
     generator = EmojiGenerator()
 
-    emoji_paths = {}
-    for placement in placements:
+    # Generate all emojis in parallel using asyncio.gather()
+    async def generate_one(placement):
+        """Generate a single emoji combination."""
         try:
             emoji_path = await generator.generate_combination(
                 placement.emoji_base_1,
                 placement.emoji_base_2,
                 fallback=True,
             )
-
-            if emoji_path:
-                emoji_paths[placement.location] = emoji_path
-            elif verbose:
-                console.print(
-                    f"[yellow]⚠ Failed to generate {placement.emoji_base_1}+{placement.emoji_base_2}[/yellow]"
-                )
-
+            return (placement.location, emoji_path)
         except Exception as e:
             if verbose:
                 console.print(f"[yellow]⚠ Error generating emoji: {e}[/yellow]")
-            continue
+            return (placement.location, None)
 
-    console.print(f"[green]Generated {len(emoji_paths)}/{len(placements)} emojis[/green]")
+    # Generate all emojis in parallel
+    results = await asyncio.gather(*[generate_one(p) for p in placements])
+
+    # Build emoji_paths dict from results
+    emoji_paths = {loc: path for loc, path in results if path is not None}
+
+    console.print(f"[green]Generated {len(emoji_paths)}/{len(placements)} emojis (parallel)[/green]")
 
     # Step 5: Enhance recipe with emojis
     console.print("\n[bold cyan]Step 5:[/bold cyan] Enhancing recipe")
-    enhancer = RecipeEnhancer()
+    enhancer = RecipeEnhancer(emoji_path_mode=emoji_path)
 
     enhanced_markdown = enhancer.enhance_recipe(
         markdown_content, placements, emoji_paths
@@ -240,14 +283,60 @@ async def run_pipeline(
 
     output_path = enhancer.write_output(enhanced_markdown, input_as_path, output_dir)
 
+    # Copy emojis to relative directory if needed
+    if emoji_path == "relative":
+        enhancer._copy_emojis_to_relative_dir(emoji_paths, output_path)
+
+    # Generate HTML export if requested
+    html_path = None
+    if export_format == "html":
+        console.print("\n[bold cyan]Bonus:[/bold cyan] Exporting to HTML")
+        html_exporter = HTMLExporter()
+
+        # Extract title from markdown
+        title_match = markdown_content.split("\n")[0]
+        title = title_match.replace("#", "").strip() if title_match.startswith("#") else "Recipe"
+
+        html_content = html_exporter.export_to_html(
+            enhanced_markdown,
+            title=title,
+            emoji_paths=emoji_paths,
+            embed_images=(emoji_path == "base64")
+        )
+
+        html_path = output_path.with_suffix(".html")
+        html_exporter.write_html_file(html_content, html_path)
+        console.print(f"[green]✓ HTML exported to {html_path}[/green]")
+
+    # Generate shopping list if requested
+    shopping_list_path = None
+    if generate_shopping_list:
+        console.print("\n[bold cyan]Bonus:[/bold cyan] Generating shopping list")
+        shopping_gen = ShoppingListGenerator()
+        shopping_list_path = shopping_gen.generate_from_recipe_file(
+            output_path, output_dir=output_dir
+        )
+        console.print(f"[green]✓ Shopping list saved to {shopping_list_path}[/green]")
+
     # Success summary
+    summary = (
+        f"[bold green]✓ Recipe enhanced successfully![/bold green]\n\n"
+        f"[dim]Input:[/dim] {input_path}\n"
+        f"[dim]Output:[/dim] {output_path}\n"
+        f"[dim]Theme:[/dim] {analysis.suggested_theme}\n"
+        f"[dim]Season:[/dim] {current_season}\n"
+        f"[dim]Emojis:[/dim] {len(emoji_paths)} placed\n"
+        f"[dim]Emoji Mode:[/dim] {emoji_path}\n"
+    )
+
+    if html_path:
+        summary += f"[dim]HTML Export:[/dim] {html_path}\n"
+    if shopping_list_path:
+        summary += f"[dim]Shopping List:[/dim] {shopping_list_path}\n"
+
     console.print(
         Panel(
-            f"[bold green]✓ Recipe enhanced successfully![/bold green]\n\n"
-            f"[dim]Input:[/dim] {input_path}\n"
-            f"[dim]Output:[/dim] {output_path}\n"
-            f"[dim]Theme:[/dim] {analysis.suggested_theme}\n"
-            f"[dim]Emojis:[/dim] {len(emoji_paths)} placed\n",
+            summary,
             title="Success",
             border_style="green",
         )

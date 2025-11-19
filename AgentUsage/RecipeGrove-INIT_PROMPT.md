@@ -23,7 +23,7 @@ This project builds on two existing tools that must be imported as library depen
 
 ### Core Stack
 - **Language**: Python
-- **Distribution**: UV-installable tool (`uv tool install recipelgrove`)
+- **Distribution**: UV-installable tool (`uv tool install recipegrove`)
 - **LLM Provider**: OpenRouter API
 - **Model**: Claude 4.5 Sonnet (with easy switching to Kimi k2 later)
 - **Dependency Management**: All dependencies pulled in single UV install
@@ -82,7 +82,7 @@ The LLM should analyze and theme based on:
 
 ### Required Commands
 ```bash
-recipelgrove <input> [options]
+recipegrove <input> [options]
 ```
 
 ### Suggested Options
@@ -94,9 +94,9 @@ recipelgrove <input> [options]
 
 ### Example Usage
 ```bash
-recipelgrove https://example.com/recipe
-recipelgrove recipe.pdf --theme italian
-recipelgrove recipe.txt --dry-run
+recipegrove https://example.com/recipe
+recipegrove recipe.pdf --theme italian
+recipegrove recipe.txt --dry-run
 ```
 
 ## Implementation Guidelines
@@ -129,8 +129,8 @@ recipelgrove recipe.txt --dry-run
 ## Project Structure
 
 ```
-recipelgrove/
-├── recipelgrove/
+recipegrove/
+├── recipegrove/
 │   ├── __init__.py
 │   ├── cli.py              # CLI entry point (Click/Typer)
 │   ├── parser.py           # OmniParser integration

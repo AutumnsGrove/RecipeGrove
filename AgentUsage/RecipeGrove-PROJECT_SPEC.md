@@ -114,7 +114,7 @@ Since some emoji combinations don't exist in Emoji Kitchen:
 
 ### Basic Usage
 ```bash
-recipelgrove <input> [options]
+recipegrove <input> [options]
 ```
 
 ### Options (Suggested)
@@ -127,16 +127,16 @@ recipelgrove <input> [options]
 ### Examples
 ```bash
 # Process URL
-recipelgrove https://example.com/pad-thai-recipe
+recipegrove https://example.com/pad-thai-recipe
 
 # Process PDF
-recipelgrove grandmas-lasagna.pdf
+recipegrove grandmas-lasagna.pdf
 
 # With custom theme
-recipelgrove recipe.txt --theme italian
+recipegrove recipe.txt --theme italian
 
 # Dry run to preview
-recipelgrove recipe.md --dry-run
+recipegrove recipe.md --dry-run
 ```
 
 ## Integration Details
@@ -232,8 +232,8 @@ A successful implementation should:
 ## Project Structure (Suggested)
 
 ```
-recipelgrove/
-├── recipelgrove/
+recipegrove/
+├── recipegrove/
 │   ├── __init__.py
 │   ├── cli.py              # CLI interface
 │   ├── parser.py           # OmniParser integration

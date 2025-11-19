@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from recipelgrove.parser import RecipeParser
+from recipegrove.parser import RecipeParser
 
 
 def test_parser_initialization():
@@ -43,7 +43,7 @@ def test_get_file_type():
     assert parser.get_file_type(Path("recipe.md")) == ".md"
 
 
-@patch("recipelgrove.parser.parse_document")
+@patch("recipegrove.parser.parse_document")
 def test_parse_url(mock_parse):
     """Test parsing URL."""
     mock_doc = Mock()
@@ -62,7 +62,7 @@ def test_parse_url(mock_parse):
     assert call_args[1]["options"]["parallel_image_downloads"] is True
 
 
-@patch("recipelgrove.parser.parse_document")
+@patch("recipegrove.parser.parse_document")
 def test_parse_file(mock_parse, tmp_path):
     """Test parsing file."""
     # Create temp file
@@ -82,7 +82,7 @@ def test_parse_file(mock_parse, tmp_path):
     mock_parse.assert_called_once()
 
 
-@patch("recipelgrove.parser.parse_document")
+@patch("recipegrove.parser.parse_document")
 def test_parse_nonexistent_file(mock_parse):
     """Test parsing non-existent file raises error."""
     parser = RecipeParser()
@@ -90,7 +90,7 @@ def test_parse_nonexistent_file(mock_parse):
         parser.parse("/nonexistent/file.pdf")
 
 
-@patch("recipelgrove.parser.parse_document")
+@patch("recipegrove.parser.parse_document")
 def test_parse_pdf_with_options(mock_parse, tmp_path):
     """Test parsing PDF includes PDF-specific options."""
     # Create temp PDF

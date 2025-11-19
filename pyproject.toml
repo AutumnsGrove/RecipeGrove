@@ -1,5 +1,5 @@
 [project]
-name = "recipelgrove"
+name = "recipegrove"
 version = "0.1.0"
 description = "Transform recipes into emoji-enhanced markdown with intelligent theming"
 readme = "README.md"
@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 [project.scripts]
-recipelgrove = "recipelgrove.cli:main"
+recipegrove = "recipegrove.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/AutumnsGrove/RecipeGrove"
@@ -110,7 +110,7 @@ addopts = [
 ]
 # Coverage options commented out until pytest-cov is properly configured
 # Uncomment after installing: uv add --dev pytest-cov
-# "--cov=recipelgrove",
+# "--cov=recipegrove",
 # "--cov-report=term-missing",
 # "--cov-report=html",
 
