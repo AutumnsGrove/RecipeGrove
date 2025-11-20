@@ -21,6 +21,7 @@ class RecipeEnhancer:
         markdown_content: str,
         emoji_placements: list,  # list[EmojiPlacement] from analyzer
         emoji_paths: dict[str, Path | str],  # mapping of placement location to emoji path
+        relative_to: Optional[Path] = None,  # directory to make paths relative to
     ) -> str:
         """Insert emojis into recipe markdown.
 
@@ -28,6 +29,7 @@ class RecipeEnhancer:
             markdown_content: Original recipe markdown
             emoji_placements: List of placement instructions
             emoji_paths: Generated emoji images mapped to placement locations
+            relative_to: If provided, make emoji paths relative to this directory
 
         Returns:
             Enhanced markdown with emojis inserted
@@ -47,10 +49,11 @@ class RecipeEnhancer:
                 console.print(f"[yellow]⚠ No emoji generated for {location}[/yellow]")
                 continue
 
-            # Generate emoji markdown
+            # Generate emoji markdown with relative path
             emoji_md = self.generate_markdown_image(
-                str(emoji_path),
-                alt_text=f"{placement.emoji_base_1}+{placement.emoji_base_2}"
+                emoji_path,
+                alt_text=f"{placement.emoji_base_1}+{placement.emoji_base_2}",
+                relative_to=relative_to
             )
 
             # Determine where to insert based on location type
@@ -94,19 +97,33 @@ class RecipeEnhancer:
         console.print(f"[green]✓ Recipe enhanced with emojis[/green]")
         return enhanced
 
-    def generate_markdown_image(self, emoji_path: str, alt_text: str = "emoji") -> str:
+    def generate_markdown_image(
+        self,
+        emoji_path: str | Path,
+        alt_text: str = "emoji",
+        relative_to: Optional[Path] = None
+    ) -> str:
         """Generate markdown image syntax for emoji.
 
         Args:
             emoji_path: Path or URL to emoji image
             alt_text: Alt text for accessibility
+            relative_to: If provided, make path relative to this directory
 
         Returns:
             Markdown image syntax
         """
-        # Make path absolute if it's a Path object
         if isinstance(emoji_path, Path):
-            emoji_path = str(emoji_path.absolute())
+            if relative_to:
+                # Make path relative for portable markdown
+                try:
+                    emoji_path = emoji_path.relative_to(relative_to)
+                except ValueError:
+                    # Can't make relative, use absolute
+                    emoji_path = emoji_path.absolute()
+            else:
+                emoji_path = emoji_path.absolute()
+            emoji_path = str(emoji_path)
         return f"![{alt_text}]({emoji_path})"
 
     def find_title_location(self, markdown: str) -> Optional[int]:

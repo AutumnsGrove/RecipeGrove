@@ -4,6 +4,39 @@ import hashlib
 from pathlib import Path
 
 
+def emoji_to_codepoint(emoji: str) -> str:
+    """Convert emoji character(s) to Unicode codepoint string.
+
+    Args:
+        emoji: Emoji character(s)
+
+    Returns:
+        Codepoint string like '1f60a' or '1f1fa-1f1f8' for multi-codepoint emojis
+    """
+    codepoints = []
+    for char in emoji:
+        cp = ord(char)
+        # Skip variation selectors and zero-width joiners for cleaner names
+        if cp not in (0xFE0F, 0x200D):
+            codepoints.append(f"{cp:x}")
+    return "-".join(codepoints) if codepoints else "unknown"
+
+
+def emoji_pair_to_filename(emoji1: str, emoji2: str) -> str:
+    """Convert emoji pair to filesystem-safe filename.
+
+    Args:
+        emoji1: First emoji
+        emoji2: Second emoji
+
+    Returns:
+        Safe filename like '1f60a_1f389.png'
+    """
+    cp1 = emoji_to_codepoint(emoji1)
+    cp2 = emoji_to_codepoint(emoji2)
+    return f"{cp1}_{cp2}.png"
+
+
 def generate_cache_key(*args: str) -> str:
     """Generate cache key from arguments.
 

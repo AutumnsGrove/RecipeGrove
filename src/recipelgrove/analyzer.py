@@ -37,6 +37,10 @@ class EmojiPlacement(BaseModel):
 class RecipeAnalyzer:
     """Analyzes recipes using LLM via OpenRouter API."""
 
+    # Haiku 4.5 pricing per 1M tokens
+    COST_PER_1M_INPUT = 1.0
+    COST_PER_1M_OUTPUT = 5.0
+
     def __init__(
         self,
         api_key: str,
@@ -57,6 +61,11 @@ class RecipeAnalyzer:
         self.base_url = "https://openrouter.ai/api/v1"
         self.max_retries = max_retries
         self.client = httpx.AsyncClient(timeout=timeout)
+
+        # Token usage tracking
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
+        self.request_count = 0
 
     async def _make_request(
         self, messages: list[dict], temperature: float = 0.7
@@ -94,7 +103,28 @@ class RecipeAnalyzer:
                     json=payload,
                 )
                 response.raise_for_status()
-                return response.json()
+                result = response.json()
+
+                # Track token usage
+                usage = result.get("usage", {})
+                input_tokens = usage.get("prompt_tokens", 0)
+                output_tokens = usage.get("completion_tokens", 0)
+
+                self.total_input_tokens += input_tokens
+                self.total_output_tokens += output_tokens
+                self.request_count += 1
+
+                # Calculate cost
+                input_cost = (input_tokens / 1_000_000) * self.COST_PER_1M_INPUT
+                output_cost = (output_tokens / 1_000_000) * self.COST_PER_1M_OUTPUT
+                total_cost = input_cost + output_cost
+
+                console.print(
+                    f"[dim]API: {input_tokens} in + {output_tokens} out = "
+                    f"{input_tokens + output_tokens} tokens (${total_cost:.4f})[/dim]"
+                )
+
+                return result
 
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 429:  # Rate limit
@@ -232,14 +262,21 @@ Emoji Density: {emoji_density} - {density_guide.get(emoji_density, density_guide
 
 For each placement, specify:
 - Location identifier (e.g., "title", "ingredient_tomato", "step_1", "serving_suggestion")
-- Base emoji 1 (single emoji character)
-- Base emoji 2 (single emoji character to combine with emoji 1)
+- Base emoji 1 (the food/ingredient/action emoji that fits the context)
+- Base emoji 2 (MUST be one of these reliable emojis: 😊 ❤️ 🔥 ⭐)
 - Context explaining why this combination fits
 - Reasoning for the placement
 
+CRITICAL: emoji_base_2 MUST always be one of: 😊 ❤️ 🔥 ⭐
+These are the only emojis guaranteed to combine properly in EmojiKitchen.
+- 😊 for happy/fun vibes
+- ❤️ for love/passion/favorites
+- 🔥 for heat/spicy/cooking
+- ⭐ for special/star ingredients
+
 Important guidelines:
 - Use emoji combinations that reflect the {analysis.suggested_theme} theme
-- Match emojis to specific ingredients or techniques
+- Match emoji_base_1 to specific ingredients or techniques
 - Ensure visual variety (don't reuse the same combination)
 - Consider the {analysis.cuisine_type} cuisine style
 
@@ -247,9 +284,9 @@ Output as a JSON array with this exact structure:
 [
     {{
         "location": "title",
-        "emoji_base_1": "🐉",
-        "emoji_base_2": "🥟",
-        "context": "Dragon represents Asian cuisine power and dumplings are the dish",
+        "emoji_base_1": "🍝",
+        "emoji_base_2": "❤️",
+        "context": "Pasta with love represents the heart of Italian cooking",
         "reasoning": "Title needs strong thematic presence"
     }}
 ]
@@ -287,6 +324,34 @@ Respond with ONLY the JSON array, no additional text."""
         except ValidationError as e:
             raise RuntimeError(f"Invalid placement structure: {e}")
 
+    def get_usage_summary(self) -> dict:
+        """Get summary of API token usage and costs.
+
+        Returns:
+            Dict with usage stats and estimated costs
+        """
+        total_tokens = self.total_input_tokens + self.total_output_tokens
+        input_cost = (self.total_input_tokens / 1_000_000) * self.COST_PER_1M_INPUT
+        output_cost = (self.total_output_tokens / 1_000_000) * self.COST_PER_1M_OUTPUT
+        total_cost = input_cost + output_cost
+
+        return {
+            "requests": self.request_count,
+            "input_tokens": self.total_input_tokens,
+            "output_tokens": self.total_output_tokens,
+            "total_tokens": total_tokens,
+            "estimated_cost": total_cost,
+        }
+
     async def close(self):
-        """Close HTTP client."""
+        """Close HTTP client and print usage summary."""
+        # Print usage summary
+        if self.request_count > 0:
+            summary = self.get_usage_summary()
+            console.print(
+                f"\n[cyan]API Usage:[/cyan] {summary['requests']} requests, "
+                f"{summary['total_tokens']} tokens "
+                f"(${summary['estimated_cost']:.4f})"
+            )
+
         await self.client.aclose()

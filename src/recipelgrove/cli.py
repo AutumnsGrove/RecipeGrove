@@ -198,7 +198,14 @@ async def run_pipeline(
 
     # Step 4: Generate emoji combinations
     console.print("\n[bold cyan]Step 4:[/bold cyan] Generating emoji combinations")
-    generator = EmojiGenerator()
+
+    # Determine the recipe directory and create emojikitchen sidecar folder
+    input_as_path = Path(input_path) if not parser.is_url(input_path) else Path("recipe.md")
+    recipe_dir = input_as_path.parent if input_as_path.parent.exists() else Path.cwd()
+    emoji_output_dir = recipe_dir / "emojikitchen"
+    emoji_output_dir.mkdir(parents=True, exist_ok=True)
+
+    generator = EmojiGenerator(output_dir=emoji_output_dir)
 
     emoji_paths = {}
     for placement in placements:
@@ -227,18 +234,18 @@ async def run_pipeline(
     console.print("\n[bold cyan]Step 5:[/bold cyan] Enhancing recipe")
     enhancer = RecipeEnhancer()
 
+    # Use relative paths so markdown is portable
     enhanced_markdown = enhancer.enhance_recipe(
-        markdown_content, placements, emoji_paths
+        markdown_content, placements, emoji_paths, relative_to=recipe_dir
     )
 
     # Step 6: Write output
     console.print("\n[bold cyan]Step 6:[/bold cyan] Saving enhanced recipe")
 
     # Determine output path
-    input_as_path = Path(input_path) if not parser.is_url(input_path) else Path("recipe.md")
-    output_dir = Path(output) if output else None
+    output_dir_path = Path(output) if output else None
 
-    output_path = enhancer.write_output(enhanced_markdown, input_as_path, output_dir)
+    output_path = enhancer.write_output(enhanced_markdown, input_as_path, output_dir_path)
 
     # Success summary
     console.print(
